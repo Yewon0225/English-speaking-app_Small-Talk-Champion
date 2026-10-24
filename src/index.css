@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/* Touch responsiveness: subtle scale-down click animation for all buttons and interactive controls */
+button,
+[role="button"],
+.btn-pressable {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.15s ease, opacity 0.12s ease, box-shadow 0.15s ease;
+}
+
+button:active:not(:disabled),
+[role="button"]:active:not(:disabled),
+.btn-pressable:active:not(:disabled) {
+  transform: scale(0.94) !important;
+}
+
+button:disabled,
+[role="button"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

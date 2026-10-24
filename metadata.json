@@ -1,0 +1,7 @@
+{
+  "name": "Small Talk Champion 👑",
+  "description": "Master English phrasal verbs for everyday conversation with friendly companion Toto through listen, speak, and role-play practice.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
