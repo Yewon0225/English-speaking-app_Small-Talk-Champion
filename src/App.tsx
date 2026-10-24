@@ -31,33 +31,18 @@ export default function App() {
     };
   });
 
-  // Saved sentences for Review tab
+  // Saved sentences for Review tab (starts empty for new sessions)
   const [savedSentences, setSavedSentences] = useState<SavedSentence[]>(() => {
     try {
       const saved = localStorage.getItem('stc_saved_sentences');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.filter((s: SavedSentence) => !s.id?.startsWith('seed-'));
+        }
+      }
     } catch (_) {}
-    // Seed initial saved sentences as shown in Screenshot 3
-    return [
-      {
-        id: 'seed-1',
-        verbId: 1,
-        verb: 'figure out',
-        type: 'dialogue',
-        english: "Don't panic. Give me a few minutes to figure out an alternative route.",
-        korean: '당황하지마. 내가 대안을 알아낼테니 시간을 조금만 줘.',
-        savedAt: Date.now() - 3600000,
-      },
-      {
-        id: 'seed-2',
-        verbId: 1,
-        verb: 'figure out',
-        type: 'example',
-        english: "I can't figure out how to use this new coffee machine.",
-        korean: '이 새 커피 머신을 어떻게 쓰는지 도무지 모르겠어.',
-        savedAt: Date.now() - 1800000,
-      },
-    ];
+    return [];
   });
 
   // Last completed session stats for Result screen

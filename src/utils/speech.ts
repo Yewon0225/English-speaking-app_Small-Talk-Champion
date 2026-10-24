@@ -136,10 +136,38 @@ export function evaluateLocalFeedback(params: {
   const cleanSpoken = normalizeSentence(userTranscript);
   const cleanVerb = normalizeSentence(phrasalVerb);
 
-  const isExact = cleanSpoken === cleanTarget;
-  const hasVerb = cleanSpoken.includes(cleanVerb);
+  // Check matching words accuracy
+  const { accuracyPct } = compareWords(targetSentence, userTranscript);
 
-  if (isExact || (cleanSpoken.length >= cleanTarget.length * 0.85 && hasVerb)) {
+  // Common inflections of the phrasal verb (e.g. run -> ran, end -> ended, call -> called, figure -> figured)
+  const verbWords = cleanVerb.split(' ').filter(Boolean);
+  const rootVerb = verbWords[0] || '';
+  const particle = verbWords.slice(1).join(' ');
+
+  const pastRoot =
+    rootVerb === 'run' ? 'ran' :
+    rootVerb === 'end' ? 'ended' :
+    rootVerb === 'call' ? 'called' :
+    rootVerb === 'figure' ? 'figured' :
+    rootVerb;
+  const ingRoot =
+    rootVerb === 'run' ? 'running' :
+    rootVerb === 'end' ? 'ending' :
+    rootVerb === 'call' ? 'calling' :
+    rootVerb === 'figure' ? 'figuring' :
+    rootVerb;
+
+  const verbVariants = [
+    cleanVerb,
+    particle ? `${pastRoot} ${particle}` : pastRoot,
+    particle ? `${ingRoot} ${particle}` : ingRoot,
+  ];
+
+  const hasVerb = verbVariants.some((v) => cleanSpoken.includes(v));
+  const isExact = cleanSpoken === cleanTarget;
+
+  // 1. Success: Exact or high word accuracy (>= 75%) and includes key verb
+  if (isExact || (accuracyPct >= 75 && (hasVerb || cleanTarget.includes(cleanSpoken)))) {
     return {
       success: true,
       status: 'success',
@@ -149,7 +177,8 @@ export function evaluateLocalFeedback(params: {
     };
   }
 
-  if (hasVerb) {
+  // 2. Near success: Key verb is spoken or good effort (>= 45% words match)
+  if (hasVerb || accuracyPct >= 45) {
     return {
       success: true,
       status: 'near_success',
@@ -159,6 +188,7 @@ export function evaluateLocalFeedback(params: {
     };
   }
 
+  // 3. First attempt failure -> Recast (Section 7)
   if (attemptNumber <= 1) {
     return {
       success: false,
@@ -167,18 +197,18 @@ export function evaluateLocalFeedback(params: {
       koreanNote: '이렇게 말해 볼까요?',
       attempt: attemptNumber,
     };
-  } else {
-    const verbWords = phrasalVerb.split(' ');
-    const hintVerb = verbWords.map((w) => w[0] + '_'.repeat(Math.max(1, w.length - 1))).join(' ');
-    const firstLetter = phrasalVerb[0];
-    return {
-      success: false,
-      status: 'elicitation',
-      feedbackText: `You're almost there! "${hintVerb}"`,
-      koreanNote: `동사는 ${firstLetter}로 시작해요.`,
-      attempt: attemptNumber,
-    };
   }
+
+  // 4. Second attempt or more failure -> Elicitation with first-letter hint (Section 7)
+  const hintVerb = verbWords.map((w) => w[0] + '_'.repeat(Math.max(1, w.length - 1))).join(' ');
+  const firstLetter = phrasalVerb[0] ? phrasalVerb[0].toLowerCase() : '';
+  return {
+    success: false,
+    status: 'elicitation',
+    feedbackText: `You're almost there! Look at the phrase: "${hintVerb}"`,
+    koreanNote: `동사는 ${firstLetter}로 시작해요.`,
+    attempt: attemptNumber,
+  };
 }
 
 // Request AI Feedback via server endpoint with seamless client fallback
@@ -188,22 +218,34 @@ export async function getSpeakingFeedback(params: {
   userTranscript: string;
   attemptNumber: number;
 }): Promise<FeedbackResult> {
+  // If user transcript is empty, return immediate friendly feedback without waiting on network
+  if (!params.userTranscript || params.userTranscript.trim().length === 0) {
+    return evaluateLocalFeedback(params);
+  }
+
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
+
     const res = await fetch('/api/feedback', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     if (res.ok) {
       const data = await res.json();
-      return {
-        success: data.success,
-        status: data.status,
-        feedbackText: data.feedbackText,
-        koreanNote: data.koreanNote,
-        attempt: data.attempt || params.attemptNumber,
-      };
+      if (data && data.feedbackText) {
+        return {
+          success: Boolean(data.success),
+          status: data.status || 'success',
+          feedbackText: data.feedbackText,
+          koreanNote: data.koreanNote || '',
+          attempt: data.attempt || params.attemptNumber,
+        };
+      }
     }
   } catch (e) {
     console.warn('Using client-side Section 7 feedback rules fallback:', e);

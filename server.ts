@@ -17,7 +17,7 @@ app.use(express.json());
 // Server-side Gemini client
 const apiKey = process.env.GEMINI_API_KEY;
 let ai: GoogleGenAI | null = null;
-if (apiKey) {
+if (apiKey && apiKey !== 'MY_GEMINI_API_KEY' && apiKey.trim().length > 15) {
   try {
     ai = new GoogleGenAI({
       apiKey,

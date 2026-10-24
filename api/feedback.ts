@@ -115,7 +115,7 @@ export default async function handler(req: any, res: any) {
     });
 
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
+    if (!apiKey || apiKey === 'MY_GEMINI_API_KEY' || apiKey.trim().length <= 15) {
       return res.status(200).json(fallback);
     }
 
