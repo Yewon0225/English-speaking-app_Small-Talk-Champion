@@ -1,8 +1,7 @@
-import React from 'react';
-import { Trophy, Flame, Star, CheckCircle2, Zap, ArrowRight, Award } from 'lucide-react';
+import React, { useState } from 'react';
+import { Star, Zap, ArrowRight, Award, X } from 'lucide-react';
 import { UserProgress, PhrasalVerbItem } from '../types';
 import { TotoAvatar } from './TotoAvatar';
-import { CrownBadge } from './CrownBadge';
 
 interface ProgressScreenProps {
   progress: UserProgress;
@@ -15,6 +14,8 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({
   phrasalVerbs,
   onStartVerb,
 }) => {
+  const [activeModal, setActiveModal] = useState<'stars' | 'xp' | null>(null);
+
   const completedCount = progress.completedVerbIds.length;
   const totalVerbs = phrasalVerbs.length;
   const progressPercent = Math.round((completedCount / totalVerbs) * 100);
@@ -36,31 +37,35 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({
           </p>
         </div>
 
-        {/* 3 Metric Pills */}
-        <div className="grid grid-cols-3 gap-2 pt-2">
-          <div className="bg-white rounded-2xl p-2.5 border border-amber-100 shadow-2xs">
-            <div className="text-lg font-black text-amber-600 flex items-center justify-center gap-1">
-              <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+        {/* 2 Metric Cards: Stars & Total XP (Streak removed) */}
+        <div className="grid grid-cols-2 gap-3 pt-2">
+          {/* Stars Card */}
+          <button
+            type="button"
+            onClick={() => setActiveModal('stars')}
+            className="bg-white hover:bg-amber-50/60 rounded-2xl p-3 border border-amber-100 hover:border-amber-300 shadow-2xs transition-all active:scale-95 text-center cursor-pointer group"
+          >
+            <div className="text-lg font-black text-amber-600 flex items-center justify-center gap-1.5">
+              <Star className="w-4 h-4 fill-amber-500 text-amber-500 group-hover:scale-110 transition-transform" />
               <span>{completedCount * 3}</span>
             </div>
-            <div className="text-[10px] font-bold text-slate-500 uppercase mt-0.5">Stars</div>
-          </div>
+            <div className="text-[11px] font-bold text-slate-600 uppercase mt-1">Stars</div>
+            <div className="text-[10px] text-amber-600/80 font-medium mt-0.5">탭하여 설명 보기 ⓘ</div>
+          </button>
 
-          <div className="bg-white rounded-2xl p-2.5 border border-amber-100 shadow-2xs">
-            <div className="text-lg font-black text-rose-600 flex items-center justify-center gap-1">
-              <Flame className="w-4 h-4 fill-rose-500 text-rose-500" />
-              <span>{progress.streakDays}d</span>
-            </div>
-            <div className="text-[10px] font-bold text-slate-500 uppercase mt-0.5">Streak</div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-2.5 border border-amber-100 shadow-2xs">
-            <div className="text-lg font-black text-sky-600 flex items-center justify-center gap-1">
-              <Zap className="w-4 h-4 fill-sky-500 text-sky-500" />
+          {/* Total XP Card */}
+          <button
+            type="button"
+            onClick={() => setActiveModal('xp')}
+            className="bg-white hover:bg-sky-50/60 rounded-2xl p-3 border border-amber-100 hover:border-sky-300 shadow-2xs transition-all active:scale-95 text-center cursor-pointer group"
+          >
+            <div className="text-lg font-black text-sky-600 flex items-center justify-center gap-1.5">
+              <Zap className="w-4 h-4 fill-sky-500 text-sky-500 group-hover:scale-110 transition-transform" />
               <span>{progress.xp}</span>
             </div>
-            <div className="text-[10px] font-bold text-slate-500 uppercase mt-0.5">Total XP</div>
-          </div>
+            <div className="text-[11px] font-bold text-slate-600 uppercase mt-1">Total XP</div>
+            <div className="text-[10px] text-sky-600/80 font-medium mt-0.5">탭하여 설명 보기 ⓘ</div>
+          </button>
         </div>
 
         {/* Progress Bar */}
@@ -136,6 +141,72 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({
           })}
         </div>
       </div>
+
+      {/* Metric Explanation Modal Popup */}
+      {activeModal && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={() => setActiveModal(null)}
+        >
+          <div
+            className="bg-white rounded-3xl p-5 max-w-xs w-full shadow-2xl border border-amber-200/80 text-center space-y-3.5 relative animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setActiveModal(null)}
+              className="absolute top-3.5 right-3.5 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors cursor-pointer"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {activeModal === 'stars' ? (
+              <>
+                <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center shadow-xs">
+                  <Star className="w-6 h-6 fill-amber-500 text-amber-500" />
+                </div>
+                <div>
+                  <h4 className="text-base font-extrabold text-slate-900">Stars (별 획득)</h4>
+                  <p className="text-[11px] font-bold text-amber-600 mt-0.5">스피킹 미션 완료 보상</p>
+                </div>
+                <div className="bg-amber-50/60 rounded-xl p-3 text-left space-y-1.5 border border-amber-100 text-xs text-slate-700 leading-relaxed">
+                  <p>
+                    • <strong>Step 1(핵심 구동사)</strong>, <strong>Step 2(예문 연습)</strong>, <strong>Step 3(롤플레이)</strong> 각 단계를 통과할 때마다 별이 지급됩니다.
+                  </p>
+                  <p>
+                    • 한 구동사당 <strong>최대 3개의 별</strong>을 모을 수 있습니다! ⭐
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="w-12 h-12 mx-auto rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-center shadow-xs">
+                  <Zap className="w-6 h-6 fill-sky-500 text-sky-500" />
+                </div>
+                <div>
+                  <h4 className="text-base font-extrabold text-slate-900">Total XP (학습 경험치)</h4>
+                  <p className="text-[11px] font-bold text-sky-600 mt-0.5">누적 말하기 학습 포인트</p>
+                </div>
+                <div className="bg-sky-50/60 rounded-xl p-3 text-left space-y-1.5 border border-sky-100 text-xs text-slate-700 leading-relaxed">
+                  <p>
+                    • 마이크로 발화하고 문장 연습을 성공할 때마다 <strong>학습 경험치(XP)</strong>가 쌓입니다.
+                  </p>
+                  <p>
+                    • 꾸준히 연습하여 <strong>Small Talk Champion</strong> 레벨을 높여보세요! ⚡
+                  </p>
+                </div>
+              </>
+            )}
+
+            <button
+              onClick={() => setActiveModal(null)}
+              className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-xs"
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
