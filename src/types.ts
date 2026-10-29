@@ -13,14 +13,22 @@ export interface PhrasalVerbItem {
   nuanceExplanation: string;
   usageTip: string;
   
-  // Step 1: Example sentence practice
+  // Step 2-1: Example sentence practice
   exampleSentence: {
     english: string;
     korean: string;
     targetPhrase: string;
   };
 
-  // Step 2: Practice dialogue (Role-play)
+  // Step 2-2: Self-composition & speaking challenge
+  challengeSentence?: {
+    english: string;
+    korean: string;
+    targetPhrase: string;
+    hintPrompt?: string;
+  };
+
+  // Step 3: Practice dialogue (Role-play)
   dialogue: {
     partnerPrompt: string;
     partnerKorean: string;
@@ -47,10 +55,29 @@ export interface SavedSentence {
   id: string;
   verbId: number;
   verb: string;
-  type: 'dialogue' | 'example';
+  type: 'dialogue' | 'example' | 'challenge';
   english: string;
   korean: string;
   savedAt: number;
+}
+
+export interface RoleplayMessage {
+  id: string;
+  sender: 'toto' | 'user';
+  text: string;
+  korean?: string;
+  timestamp: number;
+  isInitialTarget?: boolean;
+}
+
+export interface RoleplaySummaryFeedback {
+  targetFeedback: string;
+  targetFeedbackKorean: string;
+  conversationPraise: string;
+  conversationPraiseKorean: string;
+  overallPraise: string;
+  overallPraiseKorean: string;
+  turnsCompleted: number;
 }
 
 export interface UserProgress {

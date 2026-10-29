@@ -18,6 +18,12 @@ export const PHRASAL_VERBS: PhrasalVerbItem[] = [
       korean: '이 새 커피 머신을 어떻게 쓰는지 도무지 모르겠어.',
       targetPhrase: 'figure out',
     },
+    challengeSentence: {
+      english: "We haven't figured out where to eat dinner tonight.",
+      korean: "우리는 오늘 밤 어디서 저녁을 먹을지 아직 결정하지(알아내지) 못했어.",
+      targetPhrase: "figured out",
+      hintPrompt: "We haven't f______ o__ where to eat dinner tonight.",
+    },
     dialogue: {
       partnerPrompt: "The museum is closed on Mondays, so that ruins our Tuesday schedule too.",
       partnerKorean: "박물관이 매주 월요일마다 문을 닫아서, 결국 우리의 화요일 계획까지 망쳐버렸어.",
@@ -43,6 +49,12 @@ export const PHRASAL_VERBS: PhrasalVerbItem[] = [
       english: "We've run out of milk, so I need to stop by the grocery store.",
       korean: '우유가 다 떨어져서 마트에 좀 들러야 해.',
       targetPhrase: 'run out of',
+    },
+    challengeSentence: {
+      english: "My phone is running out of battery, so I need to find a charger.",
+      korean: "휴대폰 배터리가 다 떨어져가서 충전기를 찾아야 해.",
+      targetPhrase: "running out of",
+      hintPrompt: "My phone is r______ o__ o_ battery, so I need to find a charger.",
     },
     dialogue: {
       partnerPrompt: "Could you make me an iced latte? I really need some caffeine.",
@@ -70,6 +82,12 @@ export const PHRASAL_VERBS: PhrasalVerbItem[] = [
       korean: '우리는 폭우 때문에 축구 경기를 취소해야 했어.',
       targetPhrase: 'call off',
     },
+    challengeSentence: {
+      english: "We had to call off the afternoon meeting because the manager was sick.",
+      korean: "팀장님이 편찮으셔서 우리는 오늘 오후 회의를 취소해야만 했어.",
+      targetPhrase: "call off",
+      hintPrompt: "We had to c___ o__ the afternoon meeting because the manager was sick.",
+    },
     dialogue: {
       partnerPrompt: "Look outside! It's pouring rain and windy. Are we still going on a picnic?",
       partnerKorean: "밖을 봐! 비가 쏟아지고 바람도 세게 불잖아. 그래도 소풍 갈 거야?",
@@ -96,6 +114,12 @@ export const PHRASAL_VERBS: PhrasalVerbItem[] = [
       korean: '구경만 하러 갔는데 결국 책 세 권을 사 버렸어.',
       targetPhrase: 'ended up',
     },
+    challengeSentence: {
+      english: "We missed the bus, so we ended up walking all the way to the station.",
+      korean: "버스를 놓쳐서 결국 우리는 역까지 내내 걸어가야 했어.",
+      targetPhrase: "ended up",
+      hintPrompt: "We missed the bus, so we e____ u_ walking all the way to the station.",
+    },
     dialogue: {
       partnerPrompt: "Did you manage to try that popular pasta place near campus?",
       partnerKorean: "캠퍼스 근처에 있는 유명한 파스타집에 가봤어?",
@@ -121,6 +145,12 @@ export const PHRASAL_VERBS: PhrasalVerbItem[] = [
       english: "It was hard to turn down their job offer, but the commute was too long.",
       korean: '그 채용 제안을 거절하기 힘들었지만, 출퇴근 거리가 너무 멀었어.',
       targetPhrase: 'turn down',
+    },
+    challengeSentence: {
+      english: "I had to turn down his dinner invitation because I already had other plans.",
+      korean: "선약이 있어서 그의 저녁 식사 초대를 정중히 거절해야만 했어.",
+      targetPhrase: "turn down",
+      hintPrompt: "I had to t___ d___ his dinner invitation because I already had other plans.",
     },
     dialogue: {
       partnerPrompt: "Do you want to come to the cinema with us tonight?",

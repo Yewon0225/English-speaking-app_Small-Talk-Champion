@@ -47,6 +47,9 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
 
   const isDialogueSaved = isSaved(verbItem.dialogue.studentTargetSentence);
   const isExampleSaved = isSaved(verbItem.exampleSentence.english);
+  const isChallengeSaved = verbItem.challengeSentence
+    ? isSaved(verbItem.challengeSentence.english)
+    : false;
 
   return (
     <div className="space-y-4 pb-24">
@@ -121,7 +124,9 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
             <BookOpen className="w-4 h-4 text-amber-600" />
             <span>Today’s Learned Sentences</span>
           </div>
-          <span className="text-xs font-semibold text-slate-500">2 sentences</span>
+          <span className="text-xs font-semibold text-slate-500">
+            {verbItem.challengeSentence ? '3 sentences' : '2 sentences'}
+          </span>
         </div>
 
         {/* Card 1: Primary Dialogue */}
@@ -178,7 +183,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         <div className="bg-white rounded-3xl border border-slate-200/90 p-4 shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
             <span className="bg-slate-100 text-slate-700 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">
-              Practice Example
+              Practice Example 1
             </span>
             <div className="flex items-center gap-2">
               <button
@@ -217,6 +222,52 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
             ({verbItem.exampleSentence.korean})
           </p>
         </div>
+
+        {/* Card 3: Challenge Example (if present) */}
+        {verbItem.challengeSentence && (
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-4 shadow-2xs space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="bg-amber-50 text-amber-900 border border-amber-200 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">
+                Challenge Example 2 (스스로 작문)
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handlePlayAudio(verbItem.challengeSentence!.english)}
+                  className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
+                  title="Listen"
+                >
+                  <Volume2 className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() =>
+                    onToggleSave({
+                      verbId: verbItem.id,
+                      verb: verbItem.verb,
+                      type: 'challenge',
+                      english: verbItem.challengeSentence!.english,
+                      korean: verbItem.challengeSentence!.korean,
+                    })
+                  }
+                  className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
+                  title="Save sentence"
+                >
+                  {isChallengeSaved ? (
+                    <BookmarkCheck className="w-3.5 h-3.5 text-amber-600 fill-amber-500" />
+                  ) : (
+                    <Bookmark className="w-3.5 h-3.5 text-slate-500" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <p className="text-sm font-bold text-slate-900 leading-snug">
+              {verbItem.challengeSentence.english}
+            </p>
+            <p className="text-xs text-slate-500 font-medium">
+              ({verbItem.challengeSentence.korean})
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Bottom Action Buttons (Screen 3: [🏠 Home], [💞 Restart], [▶️ Next Unit]) */}
